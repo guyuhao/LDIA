@@ -1,0 +1,51 @@
+# global configuration
+dataset: cifar10              # dataset, support mnist, cifar10, imdb, ag_news, purchase, covertype
+num_classes: 10               # number of classes in the dataset, for Purchase
+cuda: 1                       # whether to use GPU, 1 (use) or 0
+log: temp                     # filename of the log, the log is saved in "tests/result/"
+debug: false                  # whether to output debug log
+
+# data configuration
+non_iid: 0                    # whether to divide dataset in non-IID setting, 1 or 0
+non_iid_alpha: 0.9            # the alpha of Dirichlet distribution, effective only if non_iid is 1
+
+# save configuration
+save_model: 0                 # whether to save model parameters during training, 1 or 0
+                              # If 1, the results are saved in "checkpoints/xx/" (xx refers to dataset)
+                              # LDIA requires model parameters saved in local file, so set 0 only enable load configuration
+save_data: 0                  # whether to save training and testing data for LDIA attack model, 1 or 0
+                              # If 1, the results are saved in "tests/data/"
+
+# load configuration
+load_target: 0                # whether to load target model saved in file, 1 or 0
+load_shadow: 0                # whether to load shadow model saved in file, 1 or 0
+load_train_data: 0            # whether to load training data for LDIA attack model saved in file, 1 or 0
+load_test_data: 0             # whether to load testing data for LDIA attack model saved in file, 1 or 0
+load_attack: 0                # whether to load LDIA attack model saved in file, 1 or 0
+
+# target model configuration
+target_model: alexnet
+target_train_size: 50000      # total training size of all participants for the target model
+target_test_size: 10000
+target_batch_size: 128
+target_gamma: 0.1
+target_wd: 0.0001
+target_momentum: 0.9
+target_learning_rate: 0.1
+target_epochs: 50             # local training epochs of participants on each round
+
+# federated learning configuration
+n_client: 2                   # number of participants
+n_selected_client: 2          # number of selected clients on each round
+rounds: 50                    # rounds
+client_train_size: 10000      # training size of each participant, only used in IID setting
+
+# attack configuration
+auxiliary_size: 100           # total size of auxiliary dataset in LDIA
+probe_size: 100               # total size of probe dataset, only used for Updates-Leak
+
+defense: ~                    # defense method, support dp, dropout
+# local differential privacy configuration
+clip: 20
+epsilon: 700
+delta: 0.01

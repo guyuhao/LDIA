@@ -1,0 +1,8 @@
+nltk==3.7
+numpy==1.23.2
+pandas==1.5.0
+PyYAML==6.0
+scikit_learn==1.2.1
+torch==1.8.1+cu111
+torchtext==0.9.1
+torchvision==0.9.1+cu111
