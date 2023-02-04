@@ -6,7 +6,7 @@
 1. Please create a **"data"** folder in the same directory of the code to save the raw dataset.
 2.  Please create a **"checkpoints"** folder in the same directory of the code to save the model parameters during federated learning. 
     For each dataset in ["ag_news", "cifar10", "covertype", "imdb", "mnist", "purchase"], please create a corresponding folder in **"checkpoints"**, such as **"checkpoints/mnist"**.
-3. For MNIST and CIFAR-10, torchvision is used to automatically download the raw dataset to **"data"** when network is available. In addition, torchtext is used for AG's News, IMDB.
+3. For MNIST and CIFAR-10, torchvision is used to automatically download the raw dataset to **"data"** when network is available. In addition, torchtext is used for AG's News and IMDB.
 4. For Covertype, please download from https://archive.ics.uci.edu/ml/datasets/covertype in advance and unzip it to **"data"**.
 5. As for Purchase, please download the raw dataset derived by <a href="https://ieeexplore.ieee.org/abstract/document/7958568/">Shokri et al.</a> in advance and save them to **"data"**.
    We provide preprocessing scripts for both datasets in the dictionary **"data_preprocess"**. Please execute the script as follows to generate Purchase dataset suitable for LDIA.
