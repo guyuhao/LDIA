@@ -31,6 +31,9 @@ def get_args():
         args['client_train_size'] = int(args['target_train_size']/args['n_client']) \
             if args['client_train_size'] is None else args['client_train_size']
 
+    if 'ldia_observed_rounds' not in args.keys() or args['ldia_observed_rounds'] is None:
+        args['ldia_observed_rounds'] = args['rounds']
+
     set_logging(args['log'])
 
     logging.warning(args)

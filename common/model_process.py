@@ -49,6 +49,9 @@ def train_model(model,
     attack = False
     if 'target' in model_type or 'shadow' in model_type:
         epochs = args['target_epochs']
+    elif 'ldia' in model_type:
+        epochs = args['ldia_epochs']
+        attack = True
 
     if args['cuda']:
         model.set_cuda()
@@ -109,7 +112,12 @@ def test_model(model, test_loader, args, attack=False):
             if isinstance(outputs, tuple):
                 outputs, _ = outputs
 
-            if not attack:
+            # calculate KL-div for attack model
+            if attack:
+                for i in range(targets.shape[0]):
+                    temp = kl_divergence(targets[i], outputs[i])
+                    result_losses += temp.item()
+            else:
                 if isinstance(criterion, nn.BCEWithLogitsLoss):
                     outputs = outputs.squeeze(1)
                 loss = criterion(outputs, targets)
@@ -165,7 +173,15 @@ def train(train_loader, model, use_cuda, attack=False, dp_clip=None, gc_percent=
         if use_cuda:
             inputs, targets = inputs.cuda(), targets.cuda()
         outputs = model.forward(inputs)
-        if not attack:
+        # train attack model using three losses
+        if attack:
+            eps = 1e-7
+            kld_loss = kld_loss_function((outputs+eps).log(), targets)
+            l1_loss = l1_loss_function(outputs, targets)
+            var_loss = var_loss_function(targets, outputs)
+            loss = 2 * kld_loss + 1 * l1_loss + 3 * var_loss
+            loss = loss/targets.shape[0]
+        else:
             if isinstance(criterion, nn.BCEWithLogitsLoss):
                 outputs = outputs.squeeze(1)
             loss = criterion(outputs, targets)

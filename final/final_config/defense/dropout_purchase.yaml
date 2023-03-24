@@ -1,7 +1,8 @@
 # global configuration
-dataset: ag_news
+dataset: purchase
+num_classes: 10
 cuda: 1
-log: compare_ag_news
+log: defense_purchase
 debug: false
 
 # data configuration
@@ -20,24 +21,24 @@ load_test_data: 0
 load_attack: 0
 
 # target model configuration
-target_model: lstm
-target_train_size: 120000
-target_test_size: 7000
-target_batch_size: 256
+target_model: fcn
+target_train_size: ~
+target_test_size: 2000
+target_batch_size: 64
 target_gamma: 0.1
 target_wd: 0.0005
 target_momentum: 0.9
-target_learning_rate: 0.001
-target_epochs: 2
+target_learning_rate: 0.005
+target_epochs: 5
 
 # federated learning configuration
 n_client: 100
 n_selected_client: 50
-rounds: 180
+rounds: 100
 client_train_size: ~
 
 # LDIA attack configuration
-auxiliary_size: 200
+auxiliary_size: 500
 probe_size: 100
 ldia_learning_rate: 0.001
 ldia_batch_size: 64
@@ -49,7 +50,7 @@ ldia_momentum: 0.9
 ldia_shadow_number: 1000
 ldia_observed_rounds: 10
 
-defense: ~
+defense: dropout
 # local differential privacy configuration
 clip: 20
 epsilon: 700

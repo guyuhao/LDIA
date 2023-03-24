@@ -19,6 +19,8 @@ import torch
 from torch.utils import data
 from torch.utils.data import BatchSampler
 
+from dataset.image_dataset import ImageDataset
+
 
 def get_dataset_labels(target_dataset, name):
     """
@@ -37,6 +39,8 @@ def get_dataset_labels(target_dataset, name):
     result = None
     if isinstance(parent_dataset, data.TensorDataset):
         result = np.array(parent_dataset.tensors[1])
+    elif isinstance(parent_dataset, ImageDataset):
+        result = np.array(parent_dataset.targets)
     elif 'cifar' in name or name in ['mnist']:
         result = np.array(parent_dataset.targets)
     elif name in ['ag_news']:

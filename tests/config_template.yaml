@@ -40,9 +40,17 @@ n_selected_client: 2          # number of selected clients on each round
 rounds: 50                    # rounds
 client_train_size: 10000      # training size of each participant, only used in IID setting
 
-# attack configuration
+# LDIA attack configuration
 auxiliary_size: 100           # total size of auxiliary dataset in LDIA
 probe_size: 100               # total size of probe dataset, only used for Updates-Leak
+ldia_learning_rate: 0.001
+ldia_batch_size: 128
+ldia_epochs: 50
+ldia_stone: []
+ldia_gamma: 0.1
+ldia_wd: 0.0005
+ldia_momentum: 0.9
+ldia_shadow_number: 500        # number of shadow models in LDIA
 
 defense: ~                    # defense method, support dp, dropout
 # local differential privacy configuration

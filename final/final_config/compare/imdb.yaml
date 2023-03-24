@@ -36,5 +36,21 @@ n_selected_client: 50
 rounds: 180
 client_train_size: ~
 
+# LDIA attack configuration
 auxiliary_size: 100
 probe_size: 100
+ldia_learning_rate: 0.001
+ldia_batch_size: 64
+ldia_epochs: 100
+ldia_stone: [51]
+ldia_gamma: 0.1
+ldia_wd: 0.0005
+ldia_momentum: 0.9
+ldia_shadow_number: 1000
+ldia_observed_rounds: 10
+
+defense: ~
+# local differential privacy configuration
+clip: 20
+epsilon: 700
+delta: 0.01

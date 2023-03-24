@@ -9,6 +9,7 @@ from random import randrange
 
 import numpy as np
 
+from attack.ldia.shadow_training import ShadowTrain
 from common import train_model, test_model
 from defense.Privacy import Privacy_account
 from defense.differential_privacy import client_differential_privacy
@@ -17,6 +18,7 @@ from federated.utils import fed_aggregation
 
 def federated_train(global_model, rounds, train_loaders, args,
                     test_loader=None, target_clients_dict=dict(), select_client=False, load_client=False,
+                    attack=False, shadow_loaders=None, ldia_attack=None,
                     dp=False, gc=False):
     """
     federated training during rounds in rounds
@@ -29,15 +31,26 @@ def federated_train(global_model, rounds, train_loaders, args,
     :param target_clients_dict: specify selected clients in each round if valid, the key is round (start from 0)
     :param select_client: whether to aggregate fractional clients in each round, False means complete aggregation
     :param bool load_client: whether to load local model parameters from local file
+    :param bool attack: whether to perform LDIA
+    :param shadow_loaders: loaders of shadow datasets, valid only if attack is True
+    :param ldia_attack: the reference of LdiaAttack, valid only if attack is True
     :param dp: whether to use dp defense
     :param gc: whether to use gc defense
     :return:
-        tuple containing:
+        tuple containing with LDIA:
+            (1) global_models: empty, not used
+            (2) client_model_dict: selected rounds of each user, the key is user-id (start from 0)
+            (3) train_x: features of training data for the LDIA attack model
+        tuple containing without attack:
             (1) global_models: empty, not used
             (2) client_model_dict: selected rounds of each user, the key is user-id (start from 0)
     """
 
     global_models = []
+
+    if attack:
+        shadow_train = ShadowTrain(shadow_loaders=shadow_loaders, init_model=global_model, select_client=select_client,
+                                   args=args, ldia_attack=ldia_attack, dp=dp)
 
     noise_scale_list = []
     # determine the standard deviation of additive noises for each participant if using dp defense
@@ -94,7 +107,10 @@ def federated_train(global_model, rounds, train_loaders, args,
             client_models.append({'index': index, 'model': client_model, 'data_size': client_data_size})
             client_model_dict[index]['rounds'].append(round)
             client_model_dict[index]['data_size'] = client_data_size
-
+        # perform LDIA shadow model training in each round
+        if attack:
+            if select_client or round < args['ldia_observed_rounds']:
+                shadow_train.train_per_round(client_models=client_models, round=round)
         # aggregate to get global model for normal federated training or active global CS-MIA
         global_model = fed_aggregation(
             global_model=global_model,
@@ -113,7 +129,10 @@ def federated_train(global_model, rounds, train_loaders, args,
             if round % 5 == 0 or round == rounds - 1:
                 logging.warning('Round {}'.format(round))
         del client_models
-    return global_models, client_model_dict
+    if not attack:
+        return global_models, client_model_dict
+    else:
+        return global_models, client_model_dict, shadow_train.train_x
 
 
 def client_train(global_model, client_index, round, select_client, args, train_loader,
